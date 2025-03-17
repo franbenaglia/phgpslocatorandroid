@@ -33,40 +33,29 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 
-//https://www.youtube.com/watch?v=mhDA1JcyYy0
 //https://medium.com/@KaushalVasava/navigation-in-jetpack-compose-full-guide-beginner-to-advanced-950c1133740
 @Composable
-fun NavigationDrawerExamples() {
+fun NavigationDrawer() {
 
     val navController = rememberNavController()
 
-    DetailedDrawerExample(navController) { innerPadding ->
+    DetailedDrawer(navController) { innerPadding ->
 
         Box(modifier = Modifier.padding(innerPadding)) {
-            //Text(
-            ///    "Swipe from left edge or use menu icon to open the dismissible drawer",
-            //   modifier = Modifier.padding(16.dp)
-            //)
-            //currentScreen.screen()
-
             AppNavigation(navController = navController)
-
         }
-
 
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailedDrawerExample(
-    navController: NavHostController, //currentScreen: AppDestination,
+fun DetailedDrawer(
+    navController: NavHostController,
     content: @Composable (PaddingValues) -> Unit
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val TAG = "LateralMenu"
-    //val currentScreen = currentScreen
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet {
@@ -89,7 +78,7 @@ fun DetailedDrawerExample(
                         style = MaterialTheme.typography.titleMedium
                     )
                     NavigationDrawerItem(
-                        label = { Text("Item 1") },
+                        label = { Text(MapContainer.label) },
                         selected = false,
                         onClick = {
                             navController.navigate(MapContainer.route)
@@ -100,7 +89,7 @@ fun DetailedDrawerExample(
                         }
                     )
                     NavigationDrawerItem(
-                        label = { Text("Item 2") },
+                        label = { Text(PositionGps.label) },
                         selected = false,
                         onClick = {
                             navController.navigate(PositionGps.route)
