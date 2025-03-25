@@ -5,6 +5,7 @@ import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.fab.phgpslocator.viewModel.MapViewModel
 
 interface AppDestination {
     val icon: ImageVector
@@ -14,10 +15,11 @@ interface AppDestination {
 }
 
 object MapContainer : AppDestination {
+    private val mapViewModel = MapViewModel()
     override val icon = Icons.Filled.Add
     override val route = "map"
     override val label = "Map"
-    override val screen: @Composable () -> Unit = { MapScreen() }
+    override val screen: @Composable () -> Unit = { MapScreen(mapViewModel) }
 }
 
 object PositionGps : AppDestination {
