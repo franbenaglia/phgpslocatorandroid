@@ -107,12 +107,12 @@ fun DetailedDrawer(
                         style = MaterialTheme.typography.titleMedium
                     )
                     NavigationDrawerItem(
-                        label = { Text("Settings") },
+                        label = { Text("Form") },
                         selected = false,
                         icon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
                         badge = { Text("20") }, // Placeholder
                         onClick = {
-                            navController.navigate(MapContainer.route)
+                            navController.navigate(FormDestination.route)
                             scope.launch {
                                 drawerState.close()
                             }

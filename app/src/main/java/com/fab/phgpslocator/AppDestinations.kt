@@ -6,6 +6,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.fab.phgpslocator.viewModel.MapViewModel
+import com.fab.phgpslocator.components.FormDetail
 
 interface AppDestination {
     val icon: ImageVector
@@ -34,6 +35,13 @@ object Main : AppDestination {
     override val route = "main"
     override val label = "Main"
     override val screen: @Composable () -> Unit = { MainScreen() }
+}
+
+object FormDestination : AppDestination {
+    override val icon = Icons.Filled.AccountCircle
+    override val route = "form"
+    override val label = "Form Detail"
+    override val screen: @Composable () -> Unit = { FormDetail() }
 }
 
 val appMenuRowScreens = listOf(PositionGps, MapContainer, Main)
