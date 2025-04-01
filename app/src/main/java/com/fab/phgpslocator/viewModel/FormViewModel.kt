@@ -7,18 +7,30 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class FormViewModel: ViewModel() {
-    // Main UI state
+
     private val _uiState = MutableStateFlow(FormUiState())
     val uiState: StateFlow<FormUiState> = _uiState.asStateFlow()
 
-    fun updateName(name: String) {
+    fun updateTitle(name: String) {
         val errors = mutableListOf<String>()
         if (name.length < 4) {
-            errors.add("The name must be at least 4 characters.")
+            errors.add("The title must be at least 4 characters.")
         }
         _uiState.value = _uiState.value.copy(
-            currentName = name,
-            currentNameErrors = errors
+            title = name,
+            titleErrors = errors
         )
     }
+
+    fun updateDescription(name: String) {
+        val errors = mutableListOf<String>()
+        if (name.length < 4) {
+            errors.add("The description must be at least 4 characters.")
+        }
+        _uiState.value = _uiState.value.copy(
+            description = name,
+            descriptionErrors = errors
+        )
+    }
+
 }

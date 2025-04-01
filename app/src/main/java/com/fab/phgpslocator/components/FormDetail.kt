@@ -12,23 +12,45 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fab.phgpslocator.viewModel.DatabaseViewModel
 import com.fab.phgpslocator.viewModel.FormViewModel
 
 @Composable
 fun FormDetail(
     mainViewModel: FormViewModel = viewModel()
-) {
+) {//,  databaseViewModel: DatabaseViewModel = viewModel()
     val mainUiState by mainViewModel.uiState.collectAsState()
+
+    //val database by databaseViewModel.photoDetail.collectAsState()
+
     Column(modifier = Modifier.padding(16.dp)) {
         TextField(
-            value = mainUiState.currentName,
+            value = mainUiState.title,
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
-            onValueChange = { mainViewModel.updateName(it) },
-            label = { Text(text = "Enter your Name") },
-            isError = mainUiState.currentNameErrors.isNotEmpty()
+            onValueChange = { mainViewModel.updateTitle(it) },
+            label = { Text(text = "Enter the title") },
+            isError = mainUiState.titleErrors.isNotEmpty()
         )
-        mainUiState.currentNameErrors.forEach {
+        mainUiState.titleErrors.forEach {
+            Text(
+                modifier = Modifier.padding(vertical = 8.dp),
+                text = it,
+                color = Color.Red
+            )
+        }
+    }
+
+    Column(modifier = Modifier.padding(16.dp)) {
+        TextField(
+            value = mainUiState.description,
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            onValueChange = { mainViewModel.updateDescription(it) },
+            label = { Text(text = "Enter the description") },
+            isError = mainUiState.descriptionErrors.isNotEmpty()
+        )
+        mainUiState.descriptionErrors.forEach {
             Text(
                 modifier = Modifier.padding(vertical = 8.dp),
                 text = it,
