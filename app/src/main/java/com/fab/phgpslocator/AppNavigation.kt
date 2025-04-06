@@ -16,7 +16,8 @@ fun AppNavigation(navController: NavHostController){
         composable(Main.route) { MainScreen() }
         composable(MapContainer.route) { MapScreen(mapViewModel) }
         composable(PositionGps.route) { PositionScreen() }
-        composable(FormDestination.route) { FormDetail() }
+        composable(FormDestination.route) { FormDetail() {
+            navController.navigate(Main.route)} }
     }
 
 }

@@ -138,7 +138,7 @@ fun DetailedDrawer(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Navigation Drawer Example") },
+                    title = { Text("Photo GPS Locator") },
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch {

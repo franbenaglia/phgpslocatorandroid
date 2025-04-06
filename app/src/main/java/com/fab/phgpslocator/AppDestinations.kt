@@ -41,7 +41,9 @@ object FormDestination : AppDestination {
     override val icon = Icons.Filled.AccountCircle
     override val route = "form"
     override val label = "Form Detail"
-    override val screen: @Composable () -> Unit = { FormDetail() }
+    override val screen: @Composable () -> Unit = { FormDetail(){
+    }
+    }
 }
 
 val appMenuRowScreens = listOf(PositionGps, MapContainer, Main)
