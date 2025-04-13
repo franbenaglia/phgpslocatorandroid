@@ -99,6 +99,17 @@ fun DetailedDrawer(
                         }
                     )
 
+                    NavigationDrawerItem(
+                        label = { Text(PhotoScreenDestination.label) },
+                        selected = false,
+                        onClick = {
+                            navController.navigate(PhotoScreenDestination.route)
+                            scope.launch {
+                                drawerState.close()
+                            }
+                        }
+                    )
+
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
                     Text(

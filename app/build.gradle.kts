@@ -76,6 +76,7 @@ dependencies {
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
+    implementation(libs.androidx.camera.view)
     annotationProcessor(libs.room.compiler)
 
     testImplementation(libs.junit)

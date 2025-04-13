@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
+//TODO ver esto https://developer.android.com/develop/ui/compose/libraries?hl=es-419#hilt
 @HiltViewModel
 class DatabaseViewModel @Inject constructor(
     private val photoDetailDao: PhotoDetailDao,

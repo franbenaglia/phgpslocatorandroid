@@ -24,6 +24,7 @@ runtimelivedata="1.7.8"
 hilt-navigation-compose = "1.2.0"
 hilt = "2.56"
 multidex = "2.0.1"
+cameraView = "1.4.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -68,6 +69,7 @@ retrofit-gson= { group = "com.squareup.retrofit2", name = "converter-gson", vers
 
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraView" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

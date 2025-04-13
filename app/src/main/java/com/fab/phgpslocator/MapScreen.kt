@@ -1,5 +1,6 @@
 package com.fab.phgpslocator
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -9,18 +10,22 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,8 +39,10 @@ import androidx.core.content.ContextCompat
 import com.fab.phgpslocator.components.SearchBar
 import com.fab.phgpslocator.viewModel.MapViewModel
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
@@ -45,6 +52,8 @@ import com.google.maps.android.compose.MarkerComposable
 import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 //https://medium.com/@ridvanozcan48/how-to-use-google-maps-in-jetpack-compose-step-by-step-android-guide-55aedac89e43
 //https://medium.com/@karollismarmokas/integrating-google-maps-in-android-with-jetpack-compose-user-location-and-search-bar-a432c9074349
@@ -64,13 +73,11 @@ fun MapScreen(mapViewModel: MapViewModel) {
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(atasehir, 15f)
     }
-    // Obtain the current context
+
     val context = LocalContext.current
 
-    // Observe the user's location from the ViewModel
     val userLocation by mapViewModel.userLocation
 
-    // Observe the selected location from the ViewModel
     val selectedLocation by mapViewModel.selectedLocation
 
     val fusedLocationClient = remember { LocationServices.getFusedLocationProviderClient(context) }
@@ -82,90 +89,93 @@ fun MapScreen(mapViewModel: MapViewModel) {
         mutableStateOf(MapProperties(mapType = MapType.SATELLITE))
     }
 
+    val selectedPoint = remember { mutableStateOf(LatLng(40.9971, 29.1007)) }
 
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState,
-        properties = properties,
-        uiSettings = uiSettings
-    ) {
+    val selectedPoints = remember { mutableStateOf(mutableListOf(LatLng(40.9971, 29.1007))) }
 
+    val flag = remember { mutableStateOf(true) }
 
-        userLocation?.let {
-            Marker(
-                state = MarkerState(position = it), // Place the marker at the user's location
-                title = "Your Location", // Set the title for the marker
-                snippet = "This is where you are currently located." // Set the snippet for the marker
-            )
-            // Move the camera to the user's location with a zoom level of 10f
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 10f)
-        }
+    val scope = rememberCoroutineScope()
 
-        // If a location was selected from the search bar, place a marker there
-        selectedLocation?.let {
-            Marker(
-                state = MarkerState(position = it), // Place the marker at the selected location
-                title = "Selected Location", // Set the title for the marker
-                snippet = "This is the place you selected." // Set the snippet for the marker
-            )
-            // Move the camera to the selected location with a zoom level of 15f
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 15f)
-        }
-
-        Marker(
-            state = MarkerState(position = atasehir),
-            title = "One Marker"
-        )
-
-
-        MarkerComposable(
-            state = MarkerState(position = atasehirb),
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = "custom marker",
-            )
-        }
-
-        MarkerInfoWindow(
-            state = MarkerState(position = atasehirc),
-            //icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher_foreground)
-        ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                contentDescription = "custom marker",
-            )
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-                modifier = Modifier
-                    .border(
-                        BorderStroke(1.dp, Color.Black),
-                        RoundedCornerShape(10)
-                    )
-                    .clip(RoundedCornerShape(10))
-                    .background(Color.Blue)
-                    .padding(20.dp)
-            ) {
-                Text("Title", fontWeight = FontWeight.Bold, color = Color.White)
-                Text("Description", fontWeight = FontWeight.Medium, color = Color.White)
-            }
-        }
-
-    }
-
-    // Layout that includes the search bar and the map, arranged in a vertical column
-    Column(modifier = Modifier.fillMaxSize()) {
-        Spacer(modifier = Modifier.height(1.dp)) // Add a spacer with a height of 18dp to push the search bar down
-
-        // Add the search bar component
-
+    Box(Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.height(19.dp))
         SearchBar(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(vertical = 16.dp),
             onPlaceSelected = { place ->
-                // When a place is selected from the search bar, update the selected location
                 mapViewModel.selectLocation(place, context)
+            }
+        )
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = cameraPositionState,
+            properties = properties,
+            uiSettings = uiSettings,
+            onMapClick = { clickedLatLng: LatLng? ->
+                mapClick(clickedLatLng, cameraPositionState, scope, selectedPoints, selectedPoint)
+            }
+        ) {
+
+            selectedPoint?.let {
+                Marker(
+                    state = MarkerState(position = it.value),
+                    title = "Your selected location",
+                    snippet = "Your selected location."
+                )
+            }
+
+            selectedPoints?.value?.forEach {
+                WindowInformation(it)
+            }
+
+
+            userLocation?.let {
+                Marker(
+                    state = MarkerState(position = it), // Place the marker at the user's location
+                    title = "Your Location", // Set the title for the marker
+                    snippet = "This is where you are currently located." // Set the snippet for the marker
+                )
+                // Move the camera to the user's location with a zoom level of 10f
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 10f)
+            }
+
+            // If a location was selected from the search bar, place a marker there
+            selectedLocation?.let {
+                Marker(
+                    state = MarkerState(position = it), // Place the marker at the selected location
+                    title = "Selected Location", // Set the title for the marker
+                    snippet = "This is the place you selected." // Set the snippet for the marker
+                )
+                // Move the camera to the selected location with a zoom level of 15f
+                cameraPositionState.position = CameraPosition.fromLatLngZoom(it, 15f)
+            }
+
+
+            MarkerComposable(
+                state = MarkerState(position = atasehirb),
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_launcher_foreground),
+                    contentDescription = "custom marker",
+                )
+            }
+
+
+        }
+
+        Switch(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(vertical = 16.dp),
+            checked = uiSettings.zoomControlsEnabled,
+            onCheckedChange = {
+                uiSettings = uiSettings.copy(zoomControlsEnabled = it)
+                properties = if (it) {
+                    properties.copy(mapType = MapType.SATELLITE)
+                } else {
+                    properties.copy(mapType = MapType.TERRAIN)
+                }
             }
         )
     }
@@ -189,17 +199,70 @@ fun MapScreen(mapViewModel: MapViewModel) {
             // Check if the location permission is already granted
             ContextCompat.checkSelfPermission(
                 context,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) -> {
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ),
+                -> {
                 // Fetch the user's location and update the camera
                 mapViewModel.fetchUserLocation(context, fusedLocationClient)
             }
 
             else -> {
                 // Request the location permission if it has not been granted
-                permissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
     }
 
+}
+
+fun mapClick(
+    latLng: LatLng?,
+    cameraPositionState: CameraPositionState,
+    scope: CoroutineScope,
+    selectedPoints: MutableState<MutableList<LatLng>>,
+    selectedPoint: MutableState<LatLng>,
+) {
+
+    scope.launch {
+        latLng?.let {
+            cameraPositionState.animate(
+                CameraUpdateFactory.newLatLng(it),
+                1000
+            )
+            selectedPoints.value.add(it)
+            selectedPoint.value = it
+            //flag.value = !flag.value
+        }
+    }
+
+}
+
+@Composable
+fun WindowInformation(latLng: LatLng) {
+    MarkerInfoWindow(
+        state = MarkerState(position = latLng),
+        //icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher_foreground)
+    ) {
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+            contentDescription = "custom marker",
+        )
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .border(
+                    BorderStroke(1.dp, Color.Black),
+                    RoundedCornerShape(10)
+                )
+                .clip(RoundedCornerShape(10))
+                .background(Color.Blue)
+                .padding(20.dp)
+        ) {
+            Text("Lat" + latLng.latitude, fontWeight = FontWeight.Bold, color = Color.White)
+            Text("Lng" + latLng.longitude, fontWeight = FontWeight.Medium, color = Color.White)
+        }
+    }
 }

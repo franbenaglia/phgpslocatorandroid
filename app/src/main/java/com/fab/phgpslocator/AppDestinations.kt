@@ -30,6 +30,13 @@ object PositionGps : AppDestination {
     override val screen: @Composable () -> Unit = { PositionScreen() }
 }
 
+object PhotoScreenDestination : AppDestination {
+    override val icon = Icons.Filled.AccountCircle
+    override val route = "photo"
+    override val label = "Photo"
+    override val screen: @Composable () -> Unit = { CameraAppScreen() }
+}
+
 object Main : AppDestination {
     override val icon = Icons.Filled.AccountCircle
     override val route = "main"
