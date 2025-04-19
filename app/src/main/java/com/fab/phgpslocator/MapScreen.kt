@@ -1,6 +1,7 @@
 package com.fab.phgpslocator
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -12,13 +13,18 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -36,7 +42,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.fab.phgpslocator.components.FormDetail
 import com.fab.phgpslocator.components.SearchBar
+import com.fab.phgpslocator.entity.Coordinate
+//import com.fab.phgpslocator.viewModel.CoordinateViewModel
 import com.fab.phgpslocator.viewModel.MapViewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -59,7 +68,7 @@ import kotlinx.coroutines.launch
 //https://medium.com/@karollismarmokas/integrating-google-maps-in-android-with-jetpack-compose-user-location-and-search-bar-a432c9074349
 //https://github.com/Karoliukas29/GoogleMapsJetpackCompose
 @Composable
-fun MapScreen(mapViewModel: MapViewModel) {
+fun MapScreen(mapViewModel: MapViewModel) { //, coordinateViewModel: CoordinateViewModel
 
     val atasehir = LatLng(40.9971, 29.1007)
 
@@ -97,6 +106,8 @@ fun MapScreen(mapViewModel: MapViewModel) {
 
     val scope = rememberCoroutineScope()
 
+    //val coordinates by coordinateViewModel.savedCoordinates
+
     Box(Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(19.dp))
         SearchBar(
@@ -113,7 +124,7 @@ fun MapScreen(mapViewModel: MapViewModel) {
             properties = properties,
             uiSettings = uiSettings,
             onMapClick = { clickedLatLng: LatLng? ->
-                mapClick(clickedLatLng, cameraPositionState, scope, selectedPoints, selectedPoint)
+                mapClick(clickedLatLng, cameraPositionState, scope, selectedPoints, selectedPoint, context)
             }
         ) {
 
@@ -127,9 +138,15 @@ fun MapScreen(mapViewModel: MapViewModel) {
 
             selectedPoints?.value?.forEach {
                 WindowInformation(it)
+                //FormDetail(){
+                //}
             }
-
-
+/*
+            coordinates?.forEach {
+                var latLng = LatLng(it.latitude?:40.9971,it.longitude?:29.1007)
+                WindowInformation(latLng)
+            }
+*/
             userLocation?.let {
                 Marker(
                     state = MarkerState(position = it), // Place the marker at the user's location
@@ -221,7 +238,10 @@ fun mapClick(
     scope: CoroutineScope,
     selectedPoints: MutableState<MutableList<LatLng>>,
     selectedPoint: MutableState<LatLng>,
+    context: Context
 ) {
+
+
 
     scope.launch {
         latLng?.let {
@@ -231,6 +251,9 @@ fun mapClick(
             )
             selectedPoints.value.add(it)
             selectedPoint.value = it
+            val dataStore = CoordinateDataStore(context)
+            //dataStore.deleteCoordinates()
+            dataStore.saveCoordinate(Coordinate(id = null, latitude = it.latitude, longitude = it.longitude))
             //flag.value = !flag.value
         }
     }
@@ -239,6 +262,9 @@ fun mapClick(
 
 @Composable
 fun WindowInformation(latLng: LatLng) {
+
+    var text by remember { mutableStateOf("") }
+
     MarkerInfoWindow(
         state = MarkerState(position = latLng),
         //icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher_foreground)
@@ -263,6 +289,24 @@ fun WindowInformation(latLng: LatLng) {
         ) {
             Text("Lat" + latLng.latitude, fontWeight = FontWeight.Bold, color = Color.White)
             Text("Lng" + latLng.longitude, fontWeight = FontWeight.Medium, color = Color.White)
+            TextField(
+                value = text,
+                onValueChange = { newText ->
+                    text = newText
+                }
+            )
+            Button(
+                onClick = { /* Handle button click */ },
+                modifier = Modifier
+                    .padding(16.dp)
+                ,
+                shape = RoundedCornerShape(8.dp),
+                enabled = true,
+                contentPadding = PaddingValues(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            ) {
+                Text(text = "Save")
+            }
         }
     }
 }

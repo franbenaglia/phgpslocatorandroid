@@ -1,17 +1,15 @@
 package com.fab.phgpslocator.entity
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
-
-@Entity(tableName = "coordinate")
-data class Coordinate (
-    @PrimaryKey(autoGenerate = true)
-    @SerializedName("id")
-    val id: Int,
-    @SerializedName("latitude")
-    val latitude: Int,
-    @SerializedName("longitude")
-    val longitude: Int
+//@Entity(tableName = "coordinate")
+@Serializable
+data class Coordinate(
+    //@PrimaryKey(autoGenerate = true)
+    //@SerializedName("id")
+    val id: Int? = null,
+    //@SerializedName("latitude")
+    val latitude: Double? = null,
+    //@SerializedName("longitude")
+    val longitude: Double? = null,
 )

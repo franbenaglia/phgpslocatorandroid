@@ -9,13 +9,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fab.phgpslocator.CoordinateDataStore
+import com.fab.phgpslocator.entity.Coordinate
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MapViewModel: ViewModel() {
+class MapViewModel : ViewModel() {
 
     // State to hold the user's location as LatLng (latitude and longitude)
     private val _userLocation = mutableStateOf<LatLng?>(null)
@@ -46,7 +49,11 @@ class MapViewModel: ViewModel() {
     // Function to fetch the user's location and update the state
     fun fetchUserLocation(context: Context, fusedLocationClient: FusedLocationProviderClient) {
         // Check if the location permission is granted
-        if (ContextCompat.checkSelfPermission(context, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             try {
                 // Fetch the last known location
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->

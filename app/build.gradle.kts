@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
     alias(libs.plugins.hilt.android)
+    alias(libs.plugins.serialization)
 }
 
 android {
@@ -70,9 +71,13 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
 
+    implementation(libs.androidx.datastore)
+
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.androidx.compose.runtime)
+
+    implementation(libs.org.jetbrains.kotlinx)
 
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
@@ -91,5 +96,8 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.multidex)
+
+    // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-serialization-compiler-plugin
+    implementation("org.jetbrains.kotlin:kotlin-serialization-compiler-plugin:2.1.20")
 
 }

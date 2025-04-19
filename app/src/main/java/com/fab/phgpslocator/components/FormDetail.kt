@@ -26,6 +26,8 @@ import com.fab.phgpslocator.Main
 import com.fab.phgpslocator.PositionGps
 import com.fab.phgpslocator.viewModel.DatabaseViewModel
 import com.fab.phgpslocator.viewModel.FormViewModel
+import com.google.maps.android.compose.GoogleMapComposable
+
 //https://stackoverflow.com/questions/79100518/navigation-graph-has-not-been-set-for-navcontroller-compose
 //https://stackoverflow.com/questions/77516144/jetpack-compose-error-navigation-graph-has-not-been-set-for-navcontroller
 @Composable
