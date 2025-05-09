@@ -95,7 +95,9 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
+    ksp(libs.room.compiler)
     implementation(libs.androidx.multidex)
+    implementation(libs.androidx.biometric)
 
     // https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-serialization-compiler-plugin
     implementation("org.jetbrains.kotlin:kotlin-serialization-compiler-plugin:2.1.20")

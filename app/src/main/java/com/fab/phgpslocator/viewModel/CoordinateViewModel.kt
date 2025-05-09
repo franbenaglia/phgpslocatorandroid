@@ -1,32 +1,37 @@
 package com.fab.phgpslocator.viewModel
 
 import android.content.Context
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fab.phgpslocator.CoordinateDataStore
 import com.fab.phgpslocator.entity.Coordinate
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+
+// todo leer https://medium.com/@riyaspullurofficial/what-is-datastore-in-android-with-kotlin-jetpack-compose-45820cf8f41b
+// sin viewmodel https://proandroiddev.com/using-android-jetpack-datastore-with-jetpack-compose-6184338cf9c0
+
+//https://github.com/cp-megh-l/BiometricAuthenticationCompose VER ESTE CODIGO TIENE VIEMODEL CON
+//DATASTORE Y HILT
 
 class CoordinateViewModel(private val context: Context) : ViewModel() {
 
+    private val dataStore = CoordinateDataStore(context)
+
     init {
-        loadSavedCoordinates(context)
+
     }
 
-    private val _savedCoordinates = mutableStateOf<Array<Coordinate>?>(null)
-    val savedCoordinates: State<Array<Coordinate>?> = _savedCoordinates
+    val coordinates = dataStore.coordinates
 
-    private fun loadSavedCoordinates(context: Context) {
+    fun saveCoordinate(coordinate: Coordinate) {
         viewModelScope.launch {
-            val dataStore = CoordinateDataStore(context)
-            _savedCoordinates.value = dataStore.coordinatesModel.stateIn(
-                scope = viewModelScope
-            ).value
+            dataStore.saveCoordinate(coordinate)
         }
     }
 
-
+    fun deleteCoordinates() {
+        viewModelScope.launch {
+            dataStore.deleteCoordinates()
+        }
+    }
 }

@@ -20,6 +20,7 @@ fun AppNavigation(navController: NavHostController, context: Context){
         composable(MapContainer.route) { MapScreen(mapViewModel) } //, coordinateViewModel
         composable(PositionGps.route) { PositionScreen() }
         composable(PhotoScreenDestination.route) { CameraAppScreen() }
+        composable(BiometricDestination.route) { BiometricScreen() }
         composable(FormDestination.route) { FormDetail() {
             navController.navigate(Main.route)} }
     }

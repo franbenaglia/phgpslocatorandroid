@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,6 +27,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +42,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.fab.phgpslocator.components.FormDetail
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.fab.phgpslocator.components.SearchBar
 import com.fab.phgpslocator.entity.Coordinate
 //import com.fab.phgpslocator.viewModel.CoordinateViewModel
@@ -68,7 +68,7 @@ import kotlinx.coroutines.launch
 //https://medium.com/@karollismarmokas/integrating-google-maps-in-android-with-jetpack-compose-user-location-and-search-bar-a432c9074349
 //https://github.com/Karoliukas29/GoogleMapsJetpackCompose
 @Composable
-fun MapScreen(mapViewModel: MapViewModel) { //, coordinateViewModel: CoordinateViewModel
+fun MapScreen(mapViewModel: MapViewModel) {
 
     val atasehir = LatLng(40.9971, 29.1007)
 
@@ -106,7 +106,13 @@ fun MapScreen(mapViewModel: MapViewModel) { //, coordinateViewModel: CoordinateV
 
     val scope = rememberCoroutineScope()
 
-    //val coordinates by coordinateViewModel.savedCoordinates
+    val dataStore = CoordinateDataStore(context)
+
+    val coords = dataStore.coordinates.collectAsState(initial = arrayOf<Coordinate>()).value
+    //val coordinateViewModel: CoordinateViewModel = viewModel<CoordinateViewModel>()
+
+    //val coords =
+    //    coordinateViewModel.coordinates.collectAsState(initial = arrayOf<Coordinate>()).value
 
     Box(Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(19.dp))
@@ -124,7 +130,16 @@ fun MapScreen(mapViewModel: MapViewModel) { //, coordinateViewModel: CoordinateV
             properties = properties,
             uiSettings = uiSettings,
             onMapClick = { clickedLatLng: LatLng? ->
-                mapClick(clickedLatLng, cameraPositionState, scope, selectedPoints, selectedPoint, context)
+                mapClick(
+                    clickedLatLng,
+                    cameraPositionState,
+                    scope,
+                    selectedPoints,
+                    selectedPoint,
+                    context,
+                    dataStore
+                    //coordinateViewModel
+                )
             }
         ) {
 
@@ -141,12 +156,12 @@ fun MapScreen(mapViewModel: MapViewModel) { //, coordinateViewModel: CoordinateV
                 //FormDetail(){
                 //}
             }
-/*
-            coordinates?.forEach {
-                var latLng = LatLng(it.latitude?:40.9971,it.longitude?:29.1007)
+
+            coords?.forEach {
+                var latLng = LatLng(it.latitude ?: 40.9971, it.longitude ?: 29.1007)
                 WindowInformation(latLng)
             }
-*/
+
             userLocation?.let {
                 Marker(
                     state = MarkerState(position = it), // Place the marker at the user's location
@@ -238,22 +253,34 @@ fun mapClick(
     scope: CoroutineScope,
     selectedPoints: MutableState<MutableList<LatLng>>,
     selectedPoint: MutableState<LatLng>,
-    context: Context
+    context: Context,
+    dataStore: CoordinateDataStore
+    //coordinateViewModel: CoordinateViewModel
 ) {
-
 
 
     scope.launch {
         latLng?.let {
-            cameraPositionState.animate(
-                CameraUpdateFactory.newLatLng(it),
-                1000
-            )
+            //cameraPositionState.animate(
+            //    CameraUpdateFactory.newLatLng(it),
+            //    1000
+            //)
             selectedPoints.value.add(it)
             selectedPoint.value = it
+
+            //coordinateViewModel.saveCoordinate(Coordinate(id = null, latitude = it.latitude, longitude = it.longitude))
+
             val dataStore = CoordinateDataStore(context)
             //dataStore.deleteCoordinates()
-            dataStore.saveCoordinate(Coordinate(id = null, latitude = it.latitude, longitude = it.longitude))
+
+            dataStore.saveCoordinate(
+                Coordinate(
+                    id = null,
+                    latitude = it.latitude,
+                    longitude = it.longitude
+                )
+            )
+
             //flag.value = !flag.value
         }
     }
@@ -298,8 +325,7 @@ fun WindowInformation(latLng: LatLng) {
             Button(
                 onClick = { /* Handle button click */ },
                 modifier = Modifier
-                    .padding(16.dp)
-                ,
+                    .padding(16.dp),
                 shape = RoundedCornerShape(8.dp),
                 enabled = true,
                 contentPadding = PaddingValues(12.dp),

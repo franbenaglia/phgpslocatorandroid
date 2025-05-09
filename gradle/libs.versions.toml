@@ -27,6 +27,7 @@ multidex = "2.0.1"
 cameraView = "1.4.2"
 datastore = "1.0.0"
 kotser = "1.8.0"
+vbiometric = "1.2.0-alpha05"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -72,6 +73,8 @@ retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", ver
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraView" }
+
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "vbiometric" }
 
 org-jetbrains-kotlinx = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotser" }
 

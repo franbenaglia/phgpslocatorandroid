@@ -10,7 +10,7 @@ import com.fab.phgpslocator.entity.Coordinate
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
-
+//leer https://medium.com/simform-engineering/introduction-to-kotlin-flow-f425b5a839f
 class CoordinateDataStore(private val context: Context) {
 
     companion object {
@@ -18,7 +18,7 @@ class CoordinateDataStore(private val context: Context) {
         private val COORDINATES = stringPreferencesKey("coordinates")
     }
 
-    val coordinatesModel: Flow<Array<Coordinate>> =
+    val coordinates: Flow<Array<Coordinate>> =
         context.dataStore.data.map { preferences ->
             val c = preferences[COORDINATES] ?: ""
             Json.decodeFromString<Array<Coordinate>>(c)

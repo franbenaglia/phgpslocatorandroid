@@ -56,4 +56,12 @@ object FormDestination : AppDestination {
     }
 }
 
-val appMenuRowScreens = listOf(PositionGps, MapContainer, Main)
+object BiometricDestination : AppDestination {
+    override val icon = Icons.Filled.AccountCircle
+    override val route = "biometric"
+    override val label = "Biometric Test"
+    override val screen: @Composable () -> Unit = { BiometricScreen()
+    }
+}
+
+val appMenuRowScreens = listOf(PositionGps, MapContainer, Main, BiometricDestination)

@@ -113,6 +113,17 @@ fun DetailedDrawer(
                         }
                     )
 
+                    NavigationDrawerItem(
+                        label = { Text(BiometricDestination.label) },
+                        selected = false,
+                        onClick = {
+                            navController.navigate(BiometricDestination.route)
+                            scope.launch {
+                                drawerState. close()
+                            }
+                        }
+                    )
+
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
 
                     Text(
